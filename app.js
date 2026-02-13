@@ -242,9 +242,14 @@ document.addEventListener('DOMContentLoaded', () => {
         const cartContainer = document.getElementById('cartItemsContainer');
         const subtotalEl = document.getElementById('subtotalPrice');
         const totalEl = document.getElementById('totalPrice');
+
+        if (!cartContainer || !subtotalEl || !totalEl) return;
+
+        console.log("Loading cart items for:", userId);
         const cartRef = firebase.database().ref('carts/' + userId);
 
         cartRef.on('value', (snapshot) => {
+            console.log("Cart data received:", snapshot.val());
             const data = snapshot.val();
             cartContainer.innerHTML = '';
             let subtotal = 0;
@@ -252,12 +257,12 @@ document.addEventListener('DOMContentLoaded', () => {
             if (data) {
                 Object.keys(data).forEach(key => {
                     const item = data[key];
-                    // Parse price and clean
-                    let priceCleaned = item.price.toLowerCase().replace('rs.', '').replace('rs', '').trim();
-                    priceCleaned = priceCleaned.replace(/,/g, '');
-                    let priceVal = parseFloat(priceCleaned);
-
-                    if (isNaN(priceVal)) priceVal = 0;
+                    // Parse price and clean (more robustly)
+                    let priceVal = 0;
+                    if (item.price) {
+                        let priceCleaned = String(item.price).toLowerCase().replace(/rs\.?|[,]/g, '').trim();
+                        priceVal = parseFloat(priceCleaned) || 0;
+                    }
 
                     // Calculate item total based on quantity
                     const itemQuantity = item.quantity || 1;
@@ -266,10 +271,11 @@ document.addEventListener('DOMContentLoaded', () => {
                     const itemEl = document.createElement('div');
                     itemEl.classList.add('cart-item');
                     itemEl.innerHTML = `
-                        <img src="${item.image}" alt="${item.name}">
+                        <img src="${item.image || ''}" alt="${item.name || 'Product'}" onerror="this.src='Images/placeholder.jpeg'">
                         <div class="cart-item-details">
-                            <div class="cart-item-name">${item.name}</div>
-                            <div class="cart-item-price">${item.price}</div>
+                            <div class="cart-item-name">${item.name || 'Unknown Product'}</div>
+                            <div class="cart-item-price">${item.price || 'N/A'}</div>
+                            ${itemQuantity > 1 ? `<div class="cart-item-qty">Qty: ${itemQuantity}</div>` : ''}
                         </div>
                         <div class="cart-actions">
                             <div class="qty-controls">
@@ -284,37 +290,36 @@ document.addEventListener('DOMContentLoaded', () => {
                 });
 
                 // Attach Event Listeners for Dynamic Elements
-                const qtyBtns = document.querySelectorAll('.qty-btn');
-                qtyBtns.forEach(btn => {
+                document.querySelectorAll('.qty-btn').forEach(btn => {
                     btn.addEventListener('click', (e) => {
-                        const key = e.target.dataset.key;
-                        const currentQty = parseInt(e.target.dataset.qty);
-                        const isPlus = e.target.classList.contains('plus');
-
+                        const key = e.currentTarget.dataset.key;
+                        const currentQty = parseInt(e.currentTarget.dataset.qty);
+                        const isPlus = e.currentTarget.classList.contains('plus');
                         let newQty = isPlus ? currentQty + 1 : currentQty - 1;
                         if (newQty < 1) newQty = 1;
-
                         firebase.database().ref('carts/' + userId + '/' + key).update({ quantity: newQty });
                     });
                 });
 
-                const deleteBtns = document.querySelectorAll('.delete-btn');
-                deleteBtns.forEach(btn => {
+                document.querySelectorAll('.delete-btn').forEach(btn => {
                     btn.addEventListener('click', (e) => {
                         if (confirm('Are you sure you want to remove this item?')) {
-                            const key = e.target.dataset.key;
+                            const key = e.currentTarget.dataset.key;
                             firebase.database().ref('carts/' + userId + '/' + key).remove();
                         }
                     });
                 });
 
             } else {
-                cartContainer.innerHTML = '<p>Your cart is empty.</p>';
+                cartContainer.innerHTML = '<p class="empty-msg">Your cart is empty.</p>';
             }
 
-            subtotalEl.textContent = `Rs. ${subtotal.toFixed(2)}`;
-            const total = subtotal + 100; // Fixed Delivery 100 as per user update
-            totalEl.textContent = `Rs. ${total.toFixed(2)}`;
+            subtotalEl.textContent = `Rs. ${subtotal.toLocaleString()}`;
+            const total = subtotal + 150; // Set to 150 to match screenshot expectations
+            totalEl.textContent = `Rs. ${total.toLocaleString()}`;
+        }, (error) => {
+            console.error("Firebase Read Error:", error);
+            cartContainer.innerHTML = '<p class="error-msg">Error loading products. Please try again.</p>';
         });
     }
 
