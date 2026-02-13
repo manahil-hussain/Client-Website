@@ -108,9 +108,9 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // Check Auth State & Update UI
     firebase.auth().onAuthStateChanged((user) => {
-        const path = window.location.pathname;
-        const isLoginPage = path.includes('login.html');
-        const isCheckoutPage = path.includes('checkout.html');
+        const path = window.location.pathname.toLowerCase();
+        const isLoginPage = path.includes('login');
+        const isCheckoutPage = path.includes('checkout');
 
         if (user) {
             console.log("User is signed in:", user.email);
@@ -220,7 +220,7 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     // --- Checkout Logic ---
-    if (window.location.pathname.includes('checkout.html')) {
+    if (window.location.pathname.toLowerCase().includes('checkout')) {
         firebase.auth().onAuthStateChanged((user) => {
             if (user) {
                 loadCartItems(user.uid);
@@ -315,7 +315,13 @@ document.addEventListener('DOMContentLoaded', () => {
             }
 
             subtotalEl.textContent = `Rs. ${subtotal.toLocaleString()}`;
-            const total = subtotal + 150; // Set to 150 to match screenshot expectations
+
+            // Only apply delivery charges if cart is not empty
+            const deliveryCharge = subtotal > 0 ? 150 : 0;
+            const deliveryEl = document.getElementById('deliveryPrice');
+            if (deliveryEl) deliveryEl.textContent = `Rs. ${deliveryCharge}`;
+
+            const total = subtotal + deliveryCharge;
             totalEl.textContent = `Rs. ${total.toLocaleString()}`;
         }, (error) => {
             console.error("Firebase Read Error:", error);
