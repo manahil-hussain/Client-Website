@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login - Moon Bling</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+
+<body class="login-page">
+
+    <div class="auth-container">
+        <h2 class="auth-title">Create Account</h2>
+
+        <!-- Signup Form -->
+        <form id="signupForm" class="auth-form">
+            <input type="text" id="signupEmail" placeholder="Email or Phone Number" required>
+            <input type="password" id="signupPassword" placeholder="Password" required>
+            <button type="submit" class="cta-btn">Sign Up</button>
+        </form>
+
+
+        <p class="auth-footer"><a href="index.html">Back to Home</a></p>
+    </div>
+
+    <!-- Firebase SDKs -->
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-auth.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
+
+    <!-- Firebase Config -->
+    <script src="firebase.config.js"></script>
+
+    <!-- Main App Logic -->
+    <script src="app.js"></script>
+</body>
+
+</html>

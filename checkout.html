@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Checkout - Moon Bling</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+
+    <header class="main-header"
+        style="position: relative; background: linear-gradient(135deg, #ca559d 0%, #FFC0CB 100%);">
+        <div class="header-container">
+            <div class="logo">Moonbling</div>
+            <nav class="nav-menu">
+                <a href="index.html">Home</a>
+                <a href="index.html#bracelets">Bracelets</a>
+                <a href="index.html#necklaces">Necklaces</a>
+                <a href="index.html#others">Others</a>
+            </nav>
+            <div class="header-icons">
+                <!-- Auth links handled by app.js if needed or static -->
+            </div>
+        </div>
+    </header>
+
+    <div class="checkout-container">
+        <h1 class="page-title">Checkout</h1>
+
+        <div class="checkout-grid">
+            <!-- Left Column: Cart Items + Shipping Form -->
+            <div class="main-checkout-section">
+                <div class="cart-section">
+                    <h2>Your Cart</h2>
+                    <div id="cartItemsContainer">
+                        <p>Loading cart...</p>
+                    </div>
+                </div>
+
+                <div class="shipping-section">
+                    <h2>Shipping Details</h2>
+                    <form id="orderForm">
+                        <input type="text" id="orderName" placeholder="Full Name" required>
+                        <input type="tel" id="orderPhone" placeholder="Phone Number" required>
+                        <input type="text" id="orderAddress" placeholder="Address" required>
+                        <input type="text" id="orderCity" placeholder="City" required>
+                    </form>
+                </div>
+            </div>
+
+            <!-- Right Column: Order Summary -->
+            <div class="order-summary">
+                <h2>Order Summary</h2>
+                <div class="summary-row">
+                    <span>Subtotal</span>
+                    <span id="subtotalPrice">Rs. 0</span>
+                </div>
+                <div class="summary-row">
+                    <span>Delivery Charges</span>
+                    <span>Rs. 100</span>
+                </div>
+                <div class="summary-row total">
+                    <span>Total</span>
+                    <span id="totalPrice">Rs. 150</span>
+                </div>
+
+                <button type="submit" form="orderForm" class="place-order-btn">Place Order</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Firebase SDKs -->
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-auth.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
+
+    <!-- Firebase Config -->
+    <script src="firebase.config.js"></script>
+
+    <!-- Main App Logic -->
+    <script src="app.js"></script>
+</body>
+
+</html>
